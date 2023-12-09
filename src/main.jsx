@@ -5,6 +5,8 @@ import './index.css'
 import { WagmiConfig, createConfig } from 'wagmi'
 import { polygonMumbai } from 'wagmi/chains'
 import { createPublicClient, http } from 'viem'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import lightTheme from './config/theme/theme'
 
 const config = createConfig({
   autoConnect: true,
@@ -16,6 +18,9 @@ const config = createConfig({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <WagmiConfig config={config}>
-    <App />
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline enableColorScheme />
+      <App />
+    </ThemeProvider>
   </WagmiConfig>,
 )

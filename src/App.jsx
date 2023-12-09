@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import './App.css'
+import Navbar from './Componentes/Navbar'
 
 import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+import Layout from './Layout'
 
 function App() {
   const { address, isConnected } = useAccount()
@@ -27,7 +29,13 @@ function App() {
         <p>Balance: {data?.formatted}</p>
       </div>
     )
-  return <button onClick={() => connect()}>Connect Wallet</button>
+  return (
+    <div>
+      <Navbar />
+      <button onClick={() => connect()}>Connect Wallet</button>
+      <Layout></Layout>
+    </div>
+  )
 }
 
 export default App
