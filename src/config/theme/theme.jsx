@@ -1,7 +1,5 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles'
 
-
-
 let lightTheme = createTheme({
   palette: {
     mode: 'light',
