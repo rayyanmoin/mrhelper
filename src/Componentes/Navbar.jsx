@@ -1,18 +1,13 @@
-import * as React from 'react'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import Menu from '@mui/material/Menu'
+import React, { useState, useEffect } from 'react'
+import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, Tooltip, MenuItem } from '@mui/material'
+
 import MenuIcon from '@mui/icons-material/Menu'
-import Container from '@mui/material/Container'
-import Avatar from '@mui/material/Avatar'
-import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
-import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
-import { Link } from 'react-router-dom'
+
+import { Link, useNavigate } from 'react-router-dom'
+
+import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 
 const pages = [
   {
@@ -28,11 +23,49 @@ const pages = [
     to: '/signin',
   },
 ]
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+
+// const settings = ['Profile', 'My Campaigns', 'Disconnect']
 
 function Navbar() {
+  const settings = [
+    {
+      name: 'Profile',
+      handler: () => {
+        console.log('profile')
+      },
+    },
+    {
+      name: 'My Campaigns',
+      handler: () => {
+        navigate('/campaign')
+      },
+    },
+    {
+      name: 'Disconnect',
+      handler: () => {
+        disconnect()
+        navigate('/')
+      },
+    },
+  ]
+
   const [anchorElNav, setAnchorElNav] = React.useState(null)
   const [anchorElUser, setAnchorElUser] = React.useState(null)
+
+  const navigate = useNavigate()
+  const { address, isConnected } = useAccount()
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  })
+  const { data } = useBalance({
+    address,
+  })
+
+  useEffect(() => {
+    console.log(data)
+  }, [data, address])
+
+  const { disconnect } = useDisconnect()
 
   const handleOpenNavMenu = event => {
     setAnchorElNav(event.currentTarget)
@@ -144,33 +177,48 @@ function Navbar() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map(setting => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {isConnected ? (
+              <div>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map(setting => (
+                    <MenuItem
+                      key={setting.name}
+                      onClick={() => {
+                        handleCloseUserMenu()
+                        setting.handler(disconnect)
+                      }}
+                    >
+                      <Typography textAlign="center">{setting.name}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+                {/* Connected to {address}
+                <button onClick={() => disconnect()}>Disconnect</button>
+                <p>Balance: {data?.formatted}</p> */}
+              </div>
+            ) : (
+              <button onClick={() => connect()}>Connect Wallet</button>
+            )}
           </Box>
         </Toolbar>
       </Container>
