@@ -1,14 +1,20 @@
-import { createBrowserRouter } from 'react-router-dom'
 
-const publicRoutes = createBrowserRouter([
+import { createBrowserRouter } from 'react-router-dom'
+import CampaignExplorer from './Pages/CampaignExplorer'
+import Home from './Pages/Home'
+import SignIn from './Pages/SignIn'
+import Campaign from './Pages/Campaign'
+
+
+export const publicRoutes = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <Home/>,
     exact: true,
   },
   {
     path: '/signin',
-    element: <SignIn />,
+    element: <SignIn/>,
     exact: true,
   },
   {
@@ -18,7 +24,7 @@ const publicRoutes = createBrowserRouter([
   },
   {
     path: '/campaign',
-    element: <Campaign />,
+    element: <Campaign/>,
     exact: true,
   },
 ])
