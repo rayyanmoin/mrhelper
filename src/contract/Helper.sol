@@ -1,5 +1,6 @@
 ///SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
+import "./IHelpher.sol";
 
 error NotOwner();
 error fundingExpired(uint deadline);
@@ -12,7 +13,7 @@ error fundExceedingAmount(uint MinRequired, uint provided);
 /// @notice launch helping campaigns, accepts, withdraw funding
 /// @dev add unExpired functionality.
 
-contract Helper {
+contract Helper is IHelper {
     address public owner;
     
     struct FundingDetails {
@@ -31,10 +32,6 @@ contract Helper {
     //user to funding details
     mapping(address => FundingDetails) public fundingDetails;
 
-
-    event FundingLive(address recipient, uint amount, uint deadline);
-    event Withdrawn(address beneficiary, uint amount);
-    event Funded(address funder, uint amount);
 
     constructor(
         uint _amount,
@@ -61,8 +58,8 @@ contract Helper {
         );
     }
 
-    function fund(address _user) external payable {
-        FundingDetails storage funding = fundingDetails[_user];
+    function fund(address _beneficiary, address _funder) external payable {
+        FundingDetails storage funding = fundingDetails[_beneficiary];
         uint _msgValue = msg.value;
 
         //if funding is active
@@ -87,7 +84,7 @@ contract Helper {
 
         funding.collectedAmount += _msgValue;
 
-        emit Funded(_user, _msgValue);
+        emit Funded(msg.sender, _msgValue);
     }
 
     function withdrawFunds() external {
@@ -112,7 +109,7 @@ contract Helper {
         (bool sent, ) = payable(msg.sender).call{value: withdrawableAmount}("");
 
         if (!sent) revert WithdrawFailed(withdrawableAmount, msg.sender);
-        emit Withdrawn(msg.sender, withdrawableAmount);
+        emit Withdrawn(_funder, withdrawableAmount);
     }
 
     function withdrawable(address _user) external view returns (uint) {

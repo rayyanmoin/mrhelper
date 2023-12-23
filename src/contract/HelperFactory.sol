@@ -1,6 +1,10 @@
 ///SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 import "./Helper.sol";
+import "./IHelpher.sol";
+
+error FundRequestAlreadyFunded(address user, uint index);
+error EthFailed(address user, uint amount);
 
 /**
  * @title HelperFactory
@@ -10,7 +14,8 @@ import "./Helper.sol";
 
 contract HelperFactory {
     struct FundRequest {
-        uint amount;
+        uint requestedAmount;
+        uint fulfilledAmount;
         address helper;
         address beneficiary;
         bool isFunded;
@@ -24,11 +29,17 @@ contract HelperFactory {
     address[] private _helperAddresses;
 
     event HelperCreated(address indexed user, address indexed helper);
-    event FundRequests(
+    event FundRequested(
         address indexed helperContract,
-        uint amount,
-        address funder,
-        address beneficiary
+        address indexed funder,
+        address indexed beneficiary,
+        uint requestedAmount
+    );
+    event FundFulfilled(
+        address indexed helperContract,
+        address indexed funder,
+        address indexed beneficiary,
+        uint fulfilledAmount
     );
 
     function getHelperAddress(
@@ -57,12 +68,14 @@ contract HelperFactory {
     function requestFund(uint _index, uint _amount, address _funder) external {
         //get specific helper contract details
         address helperContract = _helper[msg.sender][_index];
-        
+
         //get funder details for that specific helper contract
         FundRequest[] storage _details = _fundRequest[_funder];
 
-        _details.push(FundRequest(_amount, helperContract, msg.sender, false));
-        emit FundRequests(helperContract, _amount, _funder, msg.sender);
+        _details.push(
+            FundRequest(_amount, 0, helperContract, msg.sender, false)
+        );
+        emit FundRequested(helperContract, _funder, msg.sender, _amount);
     }
 
     function getFundRequests(
@@ -71,6 +84,36 @@ contract HelperFactory {
         return _fundRequest[_user];
     }
 
-    ///@TODO
-    function completeFundDetails()
+    function completeFundDetails(uint _index) external payable {
+        //get funder details for that specific helper contract
+        address _user = msg.sender;
+        uint _msgValue = msg.value;
+        FundRequest storage _details = _fundRequest[_user][_index];
+        if (_details.isFunded) revert FundRequestAlreadyFunded(_user, _index);
+
+        //make sure that the amount sent is not greater than the amount requested, underflow otherwise
+        uint extraValue = _details.requestedAmount - _msgValue;
+        _details.fulfilledAmount += _msgValue;
+
+        if (_details.requestedAmount == _msgValue) _details.isFunded = true;
+
+        //external call to particular smart contract to initiate fund on funder behalf
+        IHelper(payable(_details.helper)).fund{value: _msgValue}(
+            _details.beneficiary,
+            _funder
+        );
+
+        //transfer any extra value sent
+        if (extraValue > 0) {
+            (bool sent, ) = payable(_user).call{value: extraValue}("");
+            if (!sent) revert EthFailed(_user, extraValue);
+        }
+
+        emit FundFulfilled(
+            _details.helper,
+            _user,
+            _details.beneficiary,
+            _msgValue
+        );
+    }
 }
