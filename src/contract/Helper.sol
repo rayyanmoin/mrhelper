@@ -58,7 +58,7 @@ contract Helper is IHelper {
         );
     }
 
-    function fund(address _beneficiary, address _funder) external payable {
+    function fund(address _beneficiary, address _funder) external payable override {
         FundingDetails storage funding = fundingDetails[_beneficiary];
         uint _msgValue = msg.value;
 
@@ -84,7 +84,7 @@ contract Helper is IHelper {
 
         funding.collectedAmount += _msgValue;
 
-        emit Funded(msg.sender, _msgValue);
+        emit Funded(_funder, _msgValue);
     }
 
     function withdrawFunds() external {
@@ -109,7 +109,7 @@ contract Helper is IHelper {
         (bool sent, ) = payable(msg.sender).call{value: withdrawableAmount}("");
 
         if (!sent) revert WithdrawFailed(withdrawableAmount, msg.sender);
-        emit Withdrawn(_funder, withdrawableAmount);
+        emit Withdrawn(msg.sender, withdrawableAmount);
     }
 
     function withdrawable(address _user) external view returns (uint) {

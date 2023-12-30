@@ -48,14 +48,22 @@ contract HelperFactory {
         return _helper[user];
     }
 
-    function createHelper() external returns (address) {
-        address helper = address(new Helper());
+    function createHelper(
+        uint _amount,
+        uint _duration,
+        address _recipient,
+        string memory _description
+    ) external returns (address helper) {
+        helper = address(
+            new Helper(_amount, _duration, _recipient, _description)
+        );
 
         address[] storage userHelpers = _helper[msg.sender];
         userHelpers.push(helper);
 
         _helperAddresses.push(helper);
         emit HelperCreated(msg.sender, helper);
+        
     }
 
     /**
@@ -98,9 +106,9 @@ contract HelperFactory {
         if (_details.requestedAmount == _msgValue) _details.isFunded = true;
 
         //external call to particular smart contract to initiate fund on funder behalf
-        IHelper(payable(_details.helper)).fund{value: _msgValue}(
+        IHelper(_details.helper).fund{value: _msgValue}(
             _details.beneficiary,
-            _funder
+            msg.sender
         );
 
         //transfer any extra value sent
