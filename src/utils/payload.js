@@ -4,10 +4,22 @@
  * @returns all the campaigns deployed by user
  */
 export const getAllUserCampaigns = user => `{
-      helperCreateds(where:{user: "${user}"}){
-        id
-        user
-        transactionHash
-        helper
-      }
-    }`
+  helperCreateds(where:{user: "${user}"}){
+    user
+    helper
+  }
+}`
+
+export const getFundingDetailsOfHelper = campaignAddress => `{
+  fundeds(
+    where: {helper: "${campaignAddress}"}
+    orderDirection: desc
+    orderBy: blockTimestamp
+    first: 1
+  ) {
+    funder
+    amount
+    totalFunds
+    transactionHash
+  }
+}`

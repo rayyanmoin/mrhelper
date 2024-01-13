@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { getAllCampaigns as getAllCampaignsEndpoint } from '../utils/endpoints'
+import { getAllCampaigns as getAllCampaignsEndpoint, getCampaignDetails as getCampaignDetailsEndpoint } from '../utils/endpoints'
 
 const Campaign = () => {
   const [campaigns, setCampaigns] = useState([])
@@ -9,9 +9,23 @@ const Campaign = () => {
   useEffect(() => {
     const getAllCampaigns = async () => {
       try {
-        const campaigns = await getAllCampaignsEndpoint(address)
+        const { helperCreateds } = await getAllCampaignsEndpoint(address)
         // setCampaigns(campaigns)
-        console.log(campaigns)
+        console.log(helperCreateds)
+
+        const helperAddresses = helperCreateds.map(helper => helper.helper)
+        const helperFundingDetails = await Promise.all(helperAddresses.map(helper => getCampaignDetailsEndpoint(helper)))
+        console.log('helperFundingDetails')
+        console.log(helperFundingDetails)
+
+        const helperDetails = helperCreateds.map((helper, index) => {
+          return {
+            ...helper,
+            ...helperFundingDetails[index].fundeds,
+          }
+        })
+        setCampaigns(helperDetails)
+        console.log(helperDetails)
       } catch (error) {
         console.log(error)
       }
