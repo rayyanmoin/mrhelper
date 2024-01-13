@@ -1,17 +1,14 @@
 import { useEffect } from 'react'
 
-
 import Layout from './Layout'
 import { Route, Router, Routes } from 'react-router-dom'
 import Home from 'src/Pages/Home'
 import SignIn from 'src/Pages/SignIn'
 import CampaignExplorer from 'src/Pages/CampaignExplorer'
 import Campaign from 'src/Pages/Campaign'
-import Navbar from 'src/Componentes/Navbar'
+import Navbar from 'src/Components/Navbar'
 
 function App() {
-
-
   return (
     <div>
       <Navbar />
