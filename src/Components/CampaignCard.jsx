@@ -33,7 +33,7 @@ export default function CampaignCard({ user = '', helper = '', amount = 0 }) {
       </CardContent>
 
       <CardActions>
-        <Button size="small" LinkComponent={Link} to={`/campaign/${helper}`}>
+        <Button size="small" LinkComponent={Link} to={`/campaign/${helper}`} state={{beneficiary:user}}>
           View Details
         </Button>
       </CardActions>
