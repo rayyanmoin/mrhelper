@@ -26,7 +26,7 @@ export default function CampaignCard({ user = '', helper = '', amount = 0 }) {
         </Typography>
 
         <Typography variant="body2">
-          Amount collected:
+          Amounts collected:
           <br />
           {BigInt(amount).toString()}
         </Typography>
