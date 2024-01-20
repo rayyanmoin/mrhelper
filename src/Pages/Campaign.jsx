@@ -3,9 +3,11 @@ import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransa
 import BigNumber from 'bignumber.js'
 import { getAllCampaigns as getAllCampaignsEndpoint, getCampaignDetails as getCampaignDetailsEndpoint } from '../utils/endpoints'
 import usePrepareConfig from '../hooks/usePrepareConfig'
-
+import CampaignCard from '../Components/CampaignCard'
+import { CircularProgress, Button } from '@mui/material'
 const Campaign = () => {
   const [campaigns, setCampaigns] = useState([])
+  const [isCampaignFetching, setIsCampaignFetching] = useState(false)
   const { address: userAddress, isConnected } = useAccount()
   const partialConfig = usePrepareConfig(true)
   const { config } = usePrepareContractWrite({
@@ -43,6 +45,7 @@ const Campaign = () => {
   useEffect(() => {
     const getAllCampaigns = async () => {
       try {
+        setIsCampaignFetching(true)
         const { helperCreateds } = await getAllCampaignsEndpoint(userAddress)
         // setCampaigns(campaigns)
         console.log(helperCreateds)
@@ -60,7 +63,9 @@ const Campaign = () => {
         })
         setCampaigns(helperDetails)
         console.log(helperDetails)
+        setIsCampaignFetching(false)
       } catch (error) {
+        setIsCampaignFetching(false)
         console.log(error)
       }
     }
@@ -76,17 +81,15 @@ const Campaign = () => {
   return (
     <div>
       Campaign
+      {!isCampaignFetching && (
+        <Button disabled={isLoading} onClick={writeToContract} variant="outlined">
+          Create Helper
+        </Button>
+      )}
+      {isCampaignFetching && <CircularProgress />}
       {campaigns.map(campaign => (
-        <div key={campaign.helper}>
-          <p>contract {campaign.helper}</p>
-          <p>recipient {campaign.user}</p>
-          <p>amount {campaign.totalFunds}</p>
-          <hr />
-        </div>
+        <CampaignCard key={campaign.helper} {...campaign} />
       ))}
-      <button disabled={isLoading} onClick={writeToContract}>
-        Create Helper
-      </button>
     </div>
   )
 }
