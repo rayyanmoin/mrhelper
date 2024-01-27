@@ -3,7 +3,7 @@
  * @param {user} user address of connected user
  * @returns all the campaigns deployed by user
  */
-export const getAllUserCampaigns = user => `{
+export const getAllUserHelpers = user => `{
   helperCreateds(where:{user: "${user}"}){
     user
     helper
@@ -23,3 +23,14 @@ export const getFundingDetailsOfHelper = campaignAddress => `{
     transactionHash
   }
 }`
+
+export const getHelperDetails = (user, helper) => `{
+  fundingLives(where:{recipient: "${user}", helper: "${helper}"}) {
+    recipient
+    amount
+    deadline
+    description
+    helper
+  }
+}`
+

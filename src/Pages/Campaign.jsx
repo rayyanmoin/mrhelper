@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccount, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 import BigNumber from 'bignumber.js'
-import { getAllCampaigns as getAllCampaignsEndpoint, getCampaignDetails as getCampaignDetailsEndpoint } from '../utils/endpoints'
+import { getAllUserHelpersEndpoint, getFundingDetailsOfHelperEndpoint } from '../utils/endpoints'
 import usePrepareConfig from '../hooks/usePrepareConfig'
 import CampaignCard from '../Components/CampaignCard'
 import { CircularProgress, Button } from '@mui/material'
 const Campaign = () => {
-  const [campaigns, setCampaigns] = useState([])
+  const [helpers, setHelpers] = useState([])
   const [isCampaignFetching, setIsCampaignFetching] = useState(false)
   const { address: userAddress, isConnected } = useAccount()
   const partialConfig = usePrepareConfig(true)
@@ -46,12 +46,12 @@ const Campaign = () => {
     const getAllCampaigns = async () => {
       try {
         setIsCampaignFetching(true)
-        const { helperCreateds } = await getAllCampaignsEndpoint(userAddress)
-        // setCampaigns(campaigns)
+        const { helperCreateds } = await getAllUserHelpersEndpoint(userAddress)
+        // setHelpers(helpers)
         console.log(helperCreateds)
 
         const helperAddresses = helperCreateds.map(helper => helper.helper)
-        const helperFundingDetails = await Promise.all(helperAddresses.map(helper => getCampaignDetailsEndpoint(helper)))
+        const helperFundingDetails = await Promise.all(helperAddresses.map(helper => getFundingDetailsOfHelperEndpoint(helper)))
         console.log('helperFundingDetails')
         console.log(helperFundingDetails)
 
@@ -61,7 +61,7 @@ const Campaign = () => {
             ...helperFundingDetails[index].fundeds,
           }
         })
-        setCampaigns(helperDetails)
+        setHelpers(helperDetails)
         console.log(helperDetails)
         setIsCampaignFetching(false)
       } catch (error) {
@@ -87,7 +87,7 @@ const Campaign = () => {
         </Button>
       )}
       {isCampaignFetching && <CircularProgress />}
-      {campaigns.map(campaign => (
+      {helpers.map(campaign => (
         <CampaignCard key={campaign.helper} {...campaign} />
       ))}
     </div>

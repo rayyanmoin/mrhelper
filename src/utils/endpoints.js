@@ -1,12 +1,17 @@
 import api from './interceptor'
-import { getAllUserCampaigns, getFundingDetailsOfHelper } from './payload'
+import { getAllUserHelpers, getFundingDetailsOfHelper, getHelperDetails } from './payload'
 
-export const getAllCampaigns = user =>
+export const getAllUserHelpersEndpoint = user =>
   api.post('', {
-    query: getAllUserCampaigns(user),
+    query: getAllUserHelpers(user),
   })
 
-export const getCampaignDetails = campaignAddress =>
+export const getFundingDetailsOfHelperEndpoint = helperAddress =>
   api.post('', {
-    query: getFundingDetailsOfHelper(campaignAddress),
+    query: getFundingDetailsOfHelper(helperAddress),
+  })
+
+export const getHelperDetailsEndpoint = (user, helper) =>
+  api.post('', {
+    query: getHelperDetails(user, helper),
   })
