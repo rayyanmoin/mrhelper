@@ -58,7 +58,7 @@ const Campaign = () => {
         const helperDetails = helperCreateds.map((helper, index) => {
           return {
             ...helper,
-            ...helperFundingDetails[index].fundeds,
+            ...helperFundingDetails[index].fundeds[0],
           }
         })
         setHelpers(helperDetails)

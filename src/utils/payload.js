@@ -15,7 +15,6 @@ export const getFundingDetailsOfHelper = campaignAddress => `{
     where: {helper: "${campaignAddress}"}
     orderDirection: desc
     orderBy: blockTimestamp
-    first: 1
   ) {
     funder
     amount
@@ -33,4 +32,3 @@ export const getHelperDetails = (user, helper) => `{
     helper
   }
 }`
-

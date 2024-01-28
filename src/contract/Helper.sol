@@ -52,9 +52,11 @@ contract Helper is IHelper {
         });
 
         emit FundingLive(
-            owner = msg.sender,
+            address(this),
+            owner = _recipient,
             _amount,
-            block.timestamp + _duration
+            block.timestamp + _duration,
+            _description
         );
     }
 
@@ -84,7 +86,7 @@ contract Helper is IHelper {
 
         funding.collectedAmount += _msgValue;
 
-        emit Funded(_funder, _msgValue);
+        emit Funded(address(this), _funder, _msgValue);
     }
 
     function withdrawFunds() external {
