@@ -9,6 +9,7 @@ import { EXPLORER_URL } from '../utils/constants'
 import { truncate } from 'truncate-ethereum-address'
 import { Divider } from '@mui/material'
 import MakeFundRequest from '../Components/MakeFundRequest'
+import { isExpired } from '../utils/utils'
 
 const CampaignExplorer = () => {
   const [totalFund, setTotalFund] = useState(0)
@@ -77,7 +78,7 @@ const CampaignExplorer = () => {
         <p>Amount Raised so far: {formatEther(totalFund)}</p>
         <p>Amount to be Raised: {formatEther(BigInt(helperDetails.amount) - BigInt(totalFund))}</p>
         <p>Campaign Expires in: {new Date(+helperDetails.deadline * 1000).toString()}</p>
-        <p>Expiration Status: {helperDetails.deadline * 1000 < Date.now() ? 'Expired' : 'Active'}</p>
+        <p>Expiration Status: {isExpired(helperDetails.deadline) ? 'Expired' : 'Active'}</p>
         <p>Description: {helperDetails.description}</p>
       </div>
       <Divider light />

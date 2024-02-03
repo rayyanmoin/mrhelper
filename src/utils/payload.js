@@ -32,3 +32,9 @@ export const getHelperDetails = (user, helper) => `{
     helper
   }
 }`
+
+export const getHelperDeadline = (helper) => `{
+  fundingLives(where:{helper: "${helper}"}) {
+    deadline
+  }
+}`

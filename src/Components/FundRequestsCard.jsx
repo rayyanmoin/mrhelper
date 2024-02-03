@@ -4,6 +4,7 @@ import { Card, CardActions, CardContent, Button, Typography } from '@mui/materia
 import { truncate } from 'truncate-ethereum-address'
 import { Link } from 'react-router-dom'
 import { formatEther } from 'viem'
+import { isExpired } from '../utils/utils'
 
 /**
  * 
@@ -23,7 +24,7 @@ false
 requestedAmount
 
  */
-const FundRequestsCard = ({ beneficiary, helper, isFunded, requestedAmount }) => {
+const FundRequestsCard = ({ beneficiary, helper, isFunded, requestedAmount, deadline }) => {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -44,7 +45,7 @@ const FundRequestsCard = ({ beneficiary, helper, isFunded, requestedAmount }) =>
           {formatEther(requestedAmount)} ETH
         </Typography>
 
-        <Typography variant="body2">{isFunded ? '✔️ Already Funded' : '⏳ Outstanding'}</Typography>
+        <Typography variant="body2">{isExpired(deadline) ? '❌ Expired' : isFunded ? '✔️ Already Funded' : '⏳ Outstanding'}</Typography>
       </CardContent>
 
       <CardActions>
