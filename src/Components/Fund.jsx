@@ -64,8 +64,8 @@ const Fund = ({ helper, beneficiary }) => {
           <button type="submit">Make Fund</button>
         </form>
       )}
-      {isError ? error.message : ''}
-      {receiptisError ? receiptError.message : ''}
+      {/* {isError ? error.message : ''}
+      {receiptisError ? receiptError.message : ''} */}
       {isSuccess ? <p>Transaction Successful</p> : ''}
     </div>
   )

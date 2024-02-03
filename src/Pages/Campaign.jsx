@@ -5,6 +5,7 @@ import { getAllUserHelpersEndpoint, getFundingDetailsOfHelperEndpoint } from '..
 import usePrepareConfig from '../hooks/usePrepareConfig'
 import CampaignCard from '../Components/CampaignCard'
 import { CircularProgress, Button } from '@mui/material'
+import FundRequests from '../Components/FundRequests'
 const Campaign = () => {
   const [helpers, setHelpers] = useState([])
   const [isCampaignFetching, setIsCampaignFetching] = useState(false)
@@ -79,17 +80,20 @@ const Campaign = () => {
   }, [isConnected, userAddress, receipt])
 
   return (
-    <div>
-      Campaign
-      {!isCampaignFetching && (
-        <Button disabled={isLoading} onClick={writeToContract} variant="outlined">
-          Create Helper
-        </Button>
-      )}
-      {isCampaignFetching && <CircularProgress />}
-      {helpers.map(campaign => (
-        <CampaignCard key={campaign.helper} {...campaign} />
-      ))}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+      <div>
+        Campaign
+        {!isCampaignFetching && (
+          <Button disabled={isLoading} onClick={writeToContract} variant="outlined">
+            Create Helper
+          </Button>
+        )}
+        {isCampaignFetching && <CircularProgress />}
+        {helpers.map(campaign => (
+          <CampaignCard key={campaign.helper} {...campaign} />
+        ))}
+      </div>
+      <FundRequests />
     </div>
   )
 }

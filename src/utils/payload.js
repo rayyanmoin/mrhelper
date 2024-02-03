@@ -4,7 +4,7 @@
  * @returns all the campaigns deployed by user
  */
 export const getAllUserHelpers = user => `{
-  helperCreateds(where:{user: "${user}"}){
+  helperCreateds(where:{user: "${user}"} orderDirection:asc orderBy:blockTimestamp){
     user
     helper
   }

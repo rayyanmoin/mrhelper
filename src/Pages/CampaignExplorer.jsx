@@ -7,8 +7,11 @@ import { formatEther } from 'viem'
 import Fund from '../Components/Fund'
 import { EXPLORER_URL } from '../utils/constants'
 import { truncate } from 'truncate-ethereum-address'
+import { Divider } from '@mui/material'
+import MakeFundRequest from '../Components/MakeFundRequest'
 
 const CampaignExplorer = () => {
+  const [totalFund, setTotalFund] = useState(0)
   const [fundingDetails, setFundingDetails] = useState([])
   const [helperDetails, setHelperDetails] = useState({
     recipient: '',
@@ -49,6 +52,7 @@ const CampaignExplorer = () => {
         ])
 
         console.log(fundeds, fundingLives)
+        setTotalFund(fundeds.reduce((acc, curr) => acc + +curr.amount, 0))
         setFundingDetails(fundeds)
         setHelperDetails(Array.isArray(fundingLives) ? fundingLives[0] : fundingLives)
       } catch (error) {
@@ -56,7 +60,7 @@ const CampaignExplorer = () => {
       }
     }
     address && isConnected && getCampaignDetails()
-  }, [address, isConnected])
+  }, [address, isConnected, helperAddress])
 
   useEffect(() => {
     console.log('helperDetails', helperDetails)
@@ -70,25 +74,31 @@ const CampaignExplorer = () => {
       <div>
         <p>Recipient : {helperDetails.recipient}</p>
         <p>Amount to Raise: {formatEther(BigInt(helperDetails.amount))} ETH</p>
-        <p>Amount Raised so far: {formatEther(fundingDetails.length > 0 ? fundingDetails[fundingDetails.length - 1].totalFunds : 0)}</p>
-        <p>Campaign Expires in: {Date(+helperDetails.deadline).toString()}</p>
-        <p>Expiration Status: {helperDetails.deadline < Date.now() ? 'Expired' : 'Active'}</p>
+        <p>Amount Raised so far: {formatEther(totalFund)}</p>
+        <p>Amount to be Raised: {formatEther(BigInt(helperDetails.amount) - BigInt(totalFund))}</p>
+        <p>Campaign Expires in: {new Date(+helperDetails.deadline * 1000).toString()}</p>
+        <p>Expiration Status: {helperDetails.deadline * 1000 < Date.now() ? 'Expired' : 'Active'}</p>
         <p>Description: {helperDetails.description}</p>
       </div>
-      <div>
-        <Fund helper={helperAddress} beneficiary={beneficiary} />
-      </div>
+      <Divider light />
+      <Fund helper={helperAddress} beneficiary={beneficiary} />
+      <Divider light />
+      <MakeFundRequest helper={helperAddress} />
+      <Divider light />
       {fundingDetails.map(fund => (
-        <div key={fund.transactionHash}>
-          <a href={`${EXPLORER_URL[network?.id].AC}${fund.funder}`} rel="noreferrer" target="_blank">
-            {truncate(fund.funder, { separator: 'parenthesis' })}
-          </a>
-          <p>{formatEther(fund.amount)}</p>
-          <a href={`${EXPLORER_URL[network?.id].TX}${fund.transactionHash}`} rel="noreferrer" target="_blank">
-            {' '}
-            View Transaction on Explorer
-          </a>
-        </div>
+        <>
+          <div key={fund.transactionHash}>
+            <a href={`${EXPLORER_URL[network?.id].AC}${fund.funder}`} rel="noreferrer" target="_blank">
+              {truncate(fund.funder, { separator: 'parenthesis' })}
+            </a>
+            <p>{formatEther(fund.amount)}</p>
+            <a href={`${EXPLORER_URL[network?.id].TX}${fund.transactionHash}`} rel="noreferrer" target="_blank">
+              {' '}
+              View Transaction on Explorer
+            </a>
+          </div>
+          <Divider light />
+        </>
       ))}
     </div>
   )
