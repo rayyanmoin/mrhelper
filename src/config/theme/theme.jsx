@@ -7,6 +7,9 @@ let lightTheme = createTheme({
       main: '#005272',
     },
   },
+  typography: {
+    fontFamily: ['Courier New, monospace'].join(','),
+  },
   breakpoints: {
     values: {
       xs: 0,
@@ -24,6 +27,9 @@ let lightTheme = createTheme({
         },
       },
     },
+    // MuiTypography: {
+    //   fontFamily: ['Courier New, monospace'].join(',')
+    // },
     MuiTextField: {
       styleOverrides: {
         root: {

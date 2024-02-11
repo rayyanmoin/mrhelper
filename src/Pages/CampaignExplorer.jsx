@@ -10,6 +10,7 @@ import { truncate } from 'truncate-ethereum-address'
 import { Divider } from '@mui/material'
 import MakeFundRequest from '../Components/MakeFundRequest'
 import { isExpired } from '../utils/utils'
+import { WithdrawFunds } from '../Components/WithdrawFunds'
 
 const CampaignExplorer = () => {
   const [totalFund, setTotalFund] = useState(0)
@@ -86,6 +87,7 @@ const CampaignExplorer = () => {
       <Divider light />
       <MakeFundRequest helper={helperAddress} />
       <Divider light />
+      <WithdrawFunds helper={helperAddress} />
       {fundingDetails.map(fund => (
         <>
           <div key={fund.transactionHash}>

@@ -51,7 +51,7 @@ const FundRequests = () => {
   return (
     <div>
       {userFundRequests?.map((request, index) => (
-        <FundRequestsCard key={index + 1} {...request} deadline={helperDeadlines[index]} />
+        <FundRequestsCard key={index + 1} index={index} {...request} deadline={helperDeadlines[index]} />
       ))}
     </div>
   )
